@@ -49,6 +49,7 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.content.Intent; 
 
 import lineageos.hardware.LineageHardwareManager;
 import lineageos.providers.LineageSettings;
@@ -201,6 +202,15 @@ public class SetupWizardUtils {
         context.finishAffinity();
         context.nextAction(RESULT_SKIP);
         Log.i(TAG, "Setup complete!");
+        final String customAppPackageName = "org.avium.setup";
+        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(customAppPackageName);
+
+        if (launchIntent != null) {
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(launchIntent);
+        } else {
+            Log.e(TAG, "Could not launch " + customAppPackageName);
+        }
     }
 
     public static boolean isBluetoothDisabled() {
