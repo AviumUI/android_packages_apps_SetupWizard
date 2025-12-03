@@ -50,6 +50,7 @@ import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.content.Intent; 
+import android.content.ActivityNotFoundException;
 
 import lineageos.hardware.LineageHardwareManager;
 import lineageos.providers.LineageSettings;
@@ -203,13 +204,16 @@ public class SetupWizardUtils {
         context.nextAction(RESULT_SKIP);
         Log.i(TAG, "Setup complete!");
         final String customAppPackageName = "org.avium.setup";
-        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(customAppPackageName);
+        final String customAppActivityName = "org.avium.setup.MainActivity"; 
 
-        if (launchIntent != null) {
-            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent launchIntent = new Intent();
+        launchIntent.setComponent(new ComponentName(customAppPackageName, customAppActivityName));
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        try {
             context.startActivity(launchIntent);
-        } else {
-            Log.e(TAG, "Could not launch " + customAppPackageName);
+        } catch (ActivityNotFoundException e) {
+            Log.e("AviumSetup", "Could not launch " + customAppPackageName + " / " + customAppActivityName, e);
         }
     }
 
